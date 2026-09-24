@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>DUCK MUDACK — SPACE OUTPOST</title>
+<title>DUCK MUDACK — ENDLESS</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;width:100%;min-height:100%;background:#02030b;color:#fff;font-family:monospace;}
@@ -18,24 +17,18 @@ body{padding:6px;display:flex;justify-content:center;align-items:center;backgrou
 .duck.left{left:20px;}
 .duck.right{right:20px;transform:scaleX(-1);}
 .main-container{display:flex;gap:10px;padding:10px;background:#05070e;}
-.sidebar{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;padding:10px;border:2px solid #1634a4;border-radius:12px;background:#070b1bd9;box-shadow:inset 0 0 15px #00d9ff22;}
-.panel-title{margin:0 0 5px;text-align:center;color:#20e8ff;font-size:11px;letter-spacing:1px;}
-.difficulty{display:flex;flex-direction:column;gap:6px;}
-.diff{width:100%;min-height:42px;border:2px solid #1b5b94;border-radius:6px;background:#06112b;color:#b7d9ff;font:700 11px monospace;cursor:pointer;transition:.15s;}
-.diff:hover{border-color:#20e8ff;background:#0d214f;}
-.diff.active{border-color:#ffd42a;color:#fff;background:#14224a;box-shadow:0 0 12px #ffd42a55;}
-.diff em{display:block;margin-top:2px;color:#83a4c9;font-size:8px;font-style:normal;pointer-events:none;}
-.start{width:100%;height:58px;border:3px solid #7b1717;border-radius:6px;background:linear-gradient(#ff6b55,#d91414 55%,#8c0505);color:#fff;font:900 14px monospace;cursor:pointer;box-shadow:0 0 0 2px #14152a,0 0 15px #ff222244;}
+.sidebar{width:180px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;padding:10px;border:2px solid #1634a4;border-radius:12px;background:#070b1bd9;box-shadow:inset 0 0 15px #00d9ff22;}
+.start{width:100%;height:65px;border:3px solid #7b1717;border-radius:6px;background:linear-gradient(#ff6b55,#d91414 55%,#8c0505);color:#fff;font:900 13px monospace;cursor:pointer;box-shadow:0 0 0 2px #14152a,0 0 15px #ff222244;}
 .start:active{transform:translateY(2px);}
 .tip{margin-top:auto;text-align:center;color:#7399c9;font-size:8px;line-height:1.3;}
 .screen-wrapper{flex-grow:1;position:relative;border:3px solid #141a32;border-radius:12px;background:#050820;overflow:hidden;}
 .game{position:relative;width:100%;height:min(62vh,580px);min-height:380px;overflow:hidden;border:3px solid #0bd7ff;border-radius:6px;background:#050820;touch-action:none;cursor:none;}
 canvas{position:absolute;inset:0;width:100%;height:100%;}
 #fx,#beam{pointer-events:none;}
-.hud{position:absolute;z-index:10;top:8px;left:8px;right:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;pointer-events:none;}
-.hudbox{padding:4px;border:2px solid #20e8ff;border-radius:5px;text-align:center;background:#020922dd;box-shadow:0 0 10px #00d9ff44;}
-.hudbox small{display:block;color:#20e8ff;font-size:8px;}
-.hudbox b{display:block;margin-top:1px;font-size:15px;}
+.hud{position:absolute;z-index:10;top:8px;left:8px;right:8px;display:flex;justify-content:center;gap:15px;pointer-events:none;}
+.hudbox{padding:6px 16px;border:2px solid #20e8ff;border-radius:5px;text-align:center;background:#020922dd;box-shadow:0 0 10px #00d9ff44;}
+.hudbox small{display:block;color:#20e8ff;font-size:9px;}
+.hudbox b{display:block;margin-top:2px;font-size:18px;}
 .energy{position:absolute;z-index:10;bottom:8px;left:8px;padding:4px 8px;border:2px solid #20dfff;border-radius:5px;background:#020922dd;color:#35efff;font-size:12px;font-weight:bold;text-shadow:0 0 8px #35efff;}
 .energy strong{font-size:16px;}
 .combo{position:absolute;z-index:10;right:8px;bottom:8px;padding:5px 8px;border:2px solid #ffd42a;border-radius:5px;background:#09091ddd;color:#ffd42a;font-size:14px;font-weight:bold;opacity:0;transition:.12s;}
@@ -56,7 +49,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
 }
 .overlay{position:absolute;z-index:30;inset:0;display:flex;align-items:center;justify-content:center;background:#02030bd9;}
 .overlay.hidden{display:none;}
-.card{width:min(450px,90%);padding:20px;border:3px solid #20e8ff;border-radius:12px;background:#060a1bef;text-align:center;box-shadow:0 0 30px #00d9ff55;}
+.card{width:min(420px,90%);padding:20px;border:3px solid #20e8ff;border-radius:12px;background:#060a1bef;text-align:center;box-shadow:0 0 30px #00d9ff55;}
 .card h2{margin:0 0 10px;color:#ffd42a;font-size:26px;text-shadow:2px 2px #f22;}
 .card p{color:#b8eaff;font-size:13px;line-height:1.4;}
 .bottom{padding:8px;text-align:center;border-top:3px solid #111a3b;color:#ffd42a;font-size:16px;background:#07091d;}
@@ -69,11 +62,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
 }
 @media(max-width:768px){
   .main-container{flex-direction:column;}
-  .sidebar{width:100%;flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:center;}
-  .difficulty{flex-direction:row;flex-grow:1;}
-  .diff{min-height:36px;font-size:10px;}
-  .start{width:120px;height:38px;font-size:11px;}
-  .tip,.panel-title{display:none;}
+  .sidebar{width:100%;flex-direction:row;align-items:center;}
+  .start{width:140px;height:40px;}
+  .tip{display:none;}
   .game{height:55vh;}
 }
 </style>
@@ -84,18 +75,12 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
     <div class="duck left">🦆</div>
     <div class="duck right">🦆</div>
     <h1>DUCK <span>✦</span> MUDACK</h1>
-    <div class="sub">SPACE OUTPOST</div>
+    <div class="sub">ENDLESS SPACE OUTPOST</div>
   </header>
   <div class="main-container">
     <aside class="sidebar">
-      <div class="panel-title">✦ DIFFICULTY ✦</div>
-      <div class="difficulty">
-        <button class="diff" data-level="easy">EASY<em>6 DUCKS</em></button>
-        <button class="diff active" data-level="normal">NORMAL<em>12 DUCKS</em></button>
-        <button class="diff" data-level="expert">EXPERT<em>ENDLESS</em></button>
-      </div>
-      <button class="start" id="start">START / PAUSE</button>
-      <div class="tip">TAP DUCK = SCAN</div>
+      <button class="start" id="start">START<br>▶ / ❚❚</button>
+      <div class="tip">INFINITE AMMO<br>ENDLESS TARGETS</div>
     </aside>
     <div class="screen-wrapper">
       <div class="game" id="game">
@@ -104,11 +89,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
         <canvas id="fx"></canvas>
         <div class="hud">
           <div class="hudbox"><small>SCORE</small><b id="score">000000</b></div>
-          <div class="hudbox"><small>TIME</small><b id="time">45</b></div>
-          <div class="hudbox"><small>ROUND</small><b id="round">01/03</b></div>
-          <div class="hudbox"><small>DUCKS</small><b id="ducks">00</b></div>
         </div>
-        <div class="energy">ENERGY <strong>∞</strong></div>
+        <div class="energy">AMMO <strong>∞</strong></div>
         <div class="combo" id="combo">COMBO x2</div>
         <div id="crosshair"><div class="dot"></div></div>
         <div id="scanner">
@@ -119,7 +101,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
         <div class="overlay" id="overlay">
           <div class="card">
             <h2 id="title">DUCK MUDACK</h2>
-            <p id="message">Выбери сложность слева и нажми START.<br><br>Наводи сканер и кликай на уток.</p>
+            <p id="message">Бесконечный режим.<br><br>Нажми START для начала игры.</p>
           </div>
         </div>
       </div>
@@ -136,31 +118,23 @@ canvas{position:absolute;inset:0;width:100%;height:100%;}
 const $ = id => document.getElementById(id);
 const game = $("game"), scene = $("scene"), beamCanvas = $("beam"), fx = $("fx");
 const ctx = scene.getContext("2d"), bctx = beamCanvas.getContext("2d"), fctx = fx.getContext("2d");
-const scoreEl = $("score"), timeEl = $("time"), roundEl = $("round"), ducksEl = $("ducks"), highEl = $("highScore"), comboEl = $("combo"), overlay = $("overlay"), titleEl = $("title"), messageEl = $("message"), scanner = $("scanner"), crosshair = $("crosshair");
+const scoreEl = $("score"), highEl = $("highScore"), comboEl = $("combo");
+const overlay = $("overlay"), titleEl = $("title"), messageEl = $("message");
+const scanner = $("scanner"), crosshair = $("crosshair");
 
-const settings = {
-  easy: { count: 6, speed: 90, time: 45 },
-  normal: { count: 12, speed: 135, time: 45 },
-  expert: { count: 4, speed: 170, time: Infinity }
-};
-
-let difficulty = "normal", width = 900, height = 550, running = false, paused = false;
-let score = 0, round = 1, timeLeft = 45, combo = 0, comboTime = 0;
-let ducks = [], particles = [], stars = [], lastTime = 0, gameTime = 0, beam = null;
+let width = 900, height = 550, running = false, paused = false;
+let score = 0, combo = 0, comboTime = 0, ducks = [], particles = [], stars = [], lastTime = 0, gameTime = 0, beam = null;
 
 let highScore = Number(localStorage.getItem("duckMudackHighScore") || 0);
 highEl.textContent = String(highScore).padStart(6, "0");
 
 function resize() {
   const rect = game.getBoundingClientRect();
-  width = rect.width || 900;
-  height = rect.height || 550;
+  width = rect.width || 900; height = rect.height || 550;
   const ratio = Math.min(window.devicePixelRatio || 1, 2);
   [scene, beamCanvas, fx].forEach(c => {
-    c.width = Math.floor(width * ratio);
-    c.height = Math.floor(height * ratio);
-    c.style.width = width + "px";
-    c.style.height = height + "px";
+    c.width = Math.floor(width * ratio); c.height = Math.floor(height * ratio);
+    c.style.width = width + "px"; c.style.height = height + "px";
   });
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   bctx.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -197,11 +171,11 @@ function background(dt) {
 }
 
 function spawn() {
-  const s = settings[difficulty], fromLeft = Math.random() < .5, size = 24 + Math.random() * 12;
+  const fromLeft = Math.random() < .5, size = 24 + Math.random() * 12;
+  const speed = 140 * (0.8 + Math.random() * .5) * (1 + gameTime / 60 * .2);
   ducks.push({
     x: fromLeft ? -60 : width + 60, y: height * .18 + Math.random() * height * .4,
-    vx: (fromLeft ? 1 : -1) * s.speed * (0.85 + Math.random() * .4) * (1 + gameTime / 45 * .25),
-    vy: (Math.random() - .5) * 30, size, flap: Math.random() * 10
+    vx: (fromLeft ? 1 : -1) * speed, vy: (Math.random() - .5) * 35, size, flap: Math.random() * 10
   });
 }
 
@@ -219,18 +193,15 @@ function drawDuck(d) {
 }
 
 function startGame() {
-  score = 0; round = 1; timeLeft = settings[difficulty].time; combo = 0; comboTime = 0; gameTime = 0;
-  ducks = []; particles = []; running = true; paused = false; overlay.classList.add("hidden");
-  const count = difficulty === "expert" ? 4 : settings[difficulty].count;
-  for (let i = 0; i < count; i++) spawn();
+  score = 0; combo = 0; comboTime = 0; gameTime = 0;
+  ducks = []; particles = []; running = true; paused = false;
+  overlay.classList.add("hidden");
+  for (let i = 0; i < 5; i++) spawn();
   updateHUD();
 }
 
 function updateHUD() {
   scoreEl.textContent = String(score).padStart(6, "0");
-  timeEl.textContent = difficulty === "expert" ? "∞" : String(Math.max(0, Math.ceil(timeLeft))).padStart(2, "0");
-  roundEl.textContent = difficulty === "expert" ? "∞" : round + "/03";
-  ducksEl.textContent = difficulty === "expert" ? "∞" : String(ducks.length).padStart(2, "0");
 }
 
 function aimScanner(x, y) {
@@ -276,42 +247,29 @@ function scan(x, y) {
     score += 100 * Math.min(combo, 5);
     popup(d.x, d.y, "+" + (100 * Math.min(combo, 5)));
     comboEl.textContent = "COMBO x" + combo; comboEl.style.opacity = 1;
-    if (ducks.length === 0) {
-      if (difficulty === "expert") { spawn(); spawn(); }
-      else if (round >= 3) finish(true);
-      else { round++; timeLeft = settings[difficulty].time; for (let i = 0; i < settings[difficulty].count; i++) spawn(); }
-    }
+    spawn(); // Спавним новую утку взамен сбитой
   } else {
     scannerEffect(x, y); combo = 0; comboEl.style.opacity = 0;
   }
   updateHUD();
 }
 
-function finish(won) {
-  running = false; paused = false;
+function checkHighScore() {
   if (score > highScore) {
-    highScore = score; localStorage.setItem("duckMudackHighScore", String(highScore));
+    highScore = score;
+    localStorage.setItem("duckMudackHighScore", String(highScore));
     highEl.textContent = String(highScore).padStart(6, "0");
   }
-  overlay.classList.remove("hidden");
-  titleEl.textContent = won ? "MISSION COMPLETE!" : "TIME OVER";
-  messageEl.innerHTML = `Счёт: <b>${String(score).padStart(6, "0")}</b><br><br>Нажми START для новой игры.`;
 }
 
 $("start").addEventListener("click", () => {
   if (!running) { startGame(); return; }
   paused = !paused;
   overlay.classList.toggle("hidden", !paused);
-  if (paused) { titleEl.textContent = "PAUSED"; messageEl.innerHTML = `Игра приостановлена.<br><br>Нажми START / PAUSE, чтобы продолжить.`; }
-});
-
-document.querySelectorAll(".diff").forEach(btn => {
-  btn.addEventListener("click", e => {
-    document.querySelectorAll(".diff").forEach(b => b.classList.remove("active"));
-    e.currentTarget.classList.add("active");
-    difficulty = e.currentTarget.dataset.level;
-    if (running) startGame(); else { timeLeft = settings[difficulty].time; updateHUD(); }
-  });
+  if (paused) {
+    titleEl.textContent = "PAUSED";
+    messageEl.innerHTML = `Игра приостановлена.<br><br>Нажми START / PAUSE, чтобы продолжить.`;
+  }
 });
 
 const getPos = e => ({ x: e.clientX - game.getBoundingClientRect().left, y: e.clientY - game.getBoundingClientRect().top });
@@ -326,19 +284,17 @@ function loop(timestamp) {
 
   if (running && !paused) {
     gameTime += dt;
-    if (difficulty !== "expert" && (timeLeft -= dt) <= 0) { timeLeft = 0; finish(false); }
-
     for (const d of ducks) {
       d.x += d.vx * dt; d.y += d.vy * dt; d.flap += dt * 8;
       if (d.y < height * .12 || d.y > height * .68) d.vy *= -1;
     }
-    ducks = ducks.filter(d => d.x > -100 && d.x < width + 100);
+    ducks = ducks.filter(d => d.x > -120 && d.x < width + 120);
 
-    if (difficulty === "expert") {
-      while (ducks.length < Math.min(8, 4 + Math.floor(gameTime / 15))) spawn();
-    }
+    while (ducks.length < Math.min(10, 5 + Math.floor(gameTime / 20))) spawn();
+
     if ((comboTime -= dt) <= 0) { combo = 0; comboEl.style.opacity = 0; }
-    updateHUD();
+    
+    checkHighScore();
   }
 
   ducks.forEach(drawDuck);
