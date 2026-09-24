@@ -258,7 +258,7 @@ canvas{
   cursor:pointer;
 }
 .diff.active{ border-color:#ffd42a; color:white; box-shadow:0 0 12px #ffd42a55; }
-.diff em{ display:block; margin-top:4px; color:#83a4c9; font-size:8px; font-style:normal; }
+.diff em{ display:block; margin-top:4px; color:#83a4c9; font-size:8px; font-style:normal; pointer-events:none; }
 .start{
   width:100%; height:67px;
   border:3px solid #7b1717;
@@ -390,6 +390,399 @@ const roundEl = document.getElementById("round");
 const ducksEl = document.getElementById("ducks");
 const highEl = document.getElementById("highScore");
 const comboEl = document.getElementById("combo");
+const overlay = document.getElementById("overlay");
+const titleEl = document.getElementById("title");
+const messageEl = document.getElementById("message");
+const scanner = document.getElementById("scanner");
+const crosshair = document.getElementById("crosshair");
+
+const settings = {
+  easy: { count: 6, speed: 80, time: 45 },
+  normal: { count: 12, speed: 120, time: 45 },
+  expert: { count: 4, speed: 150, time: Infinity }
+};
+
+let difficulty = "normal";
+let width = 1000;
+let height = 600;
+let running = false;
+let paused = false;
+let score = 0;
+let round = 1;
+let timeLeft = 45;
+let combo = 0;
+let comboTime = 0;
+let ducks = [];
+let particles = [];
+let stars = [];
+let lastTime = 0;
+let gameTime = 0;
+
+let highScore = Number(localStorage.getItem("duckMudackHighScore") || 0);
+highEl.textContent = String(highScore).padStart(6, "0");
+
+function resize() {
+  const rect = game.getBoundingClientRect();
+  width = rect.width || 1000;
+  height = rect.height || 600;
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+
+  [scene, beamCanvas, fx].forEach(canvas => {
+    canvas.width = Math.floor(width * ratio);
+    canvas.height = Math.floor(height * ratio);
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+  });
+
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  bctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  fctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+for (let i = 0; i < 130; i++) {
+  stars.push({
+    x: Math.random(),
+    y: Math.random(),
+    size: Math.random() * 2 + .4,
+    speed: Math.random() * .12 + .03,
+    alpha: Math.random() * .8 + .2
+  });
+}
+
+function background(dt) {
+  const t = performance.now() / 1000;
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, "#020725");
+  gradient.addColorStop(.45, "#24105b");
+  gradient.addColorStop(1, "#06182d");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  const nebula = ctx.createRadialGradient(width * .5, height * .3, 0, width * .5, height * .3, width * .6);
+  nebula.addColorStop(0, "rgba(80,60,255,.20)");
+  nebula.addColorStop(.5, "rgba(180,30,255,.08)");
+  nebula.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = nebula;
+  ctx.fillRect(0, 0, width, height);
+
+  for (const star of stars) {
+    star.y += star.speed * dt;
+    if (star.y > 1) {
+      star.y = 0;
+      star.x = Math.random();
+    }
+    const x = star.x * width;
+    const y = star.y * height * .75;
+    ctx.globalAlpha = star.alpha * (.7 + Math.sin(t * 2 + star.x * 10) * .3);
+    ctx.fillStyle = "#eaffff";
+    ctx.beginPath();
+    ctx.arc(x, y, star.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.save();
+  ctx.shadowBlur = 30;
+  ctx.shadowColor = "#714cff";
+  ctx.fillStyle = "#3826a5";
+  ctx.beginPath();
+  ctx.arc(width * .14, height * .27, height * .16, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  ctx.shadowBlur = 20;
+  ctx.shadowColor = "#ff5038";
+  ctx.fillStyle = "#ff704b";
+  ctx.beginPath();
+  ctx.arc(width * .72, height * .58, height * .10, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.fillStyle = "#082e52";
+  ctx.fillRect(0, height * .72, width, height * .28);
+
+  for (let i = 0; i < 25; i++) {
+    const y = height * .74 + i * 8;
+    const x = (i * 97 + t * 25) % width;
+    ctx.globalAlpha = .22;
+    ctx.fillStyle = i % 2 ? "#1f75a0" : "#32d7d4";
+    ctx.fillRect(x, y, 40 + (i % 4) * 10, 2);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function createDuck() {
+  const s = settings[difficulty];
+  const fromLeft = Math.random() < .5;
+  const size = 25 + Math.random() * 13;
+  const direction = fromLeft ? 1 : -1;
+  const speed = s.speed * (0.8 + Math.random() * .5) * (1 + gameTime / 45 * .3);
+
+  return {
+    x: fromLeft ? -60 : width + 60,
+    y: height * .20 + Math.random() * height * .38,
+    vx: direction * speed,
+    vy: (Math.random() - .5) * 35,
+    size: size,
+    flap: Math.random() * 10
+  };
+}
+
+function drawDuck(duck) {
+  const s = duck.size;
+  ctx.save();
+  ctx.translate(duck.x, duck.y);
+  if (duck.vx < 0) ctx.scale(-1, 1);
+
+  duck.flap += .15;
+  const wing = Math.sin(duck.flap) * s * .13;
+
+  ctx.fillStyle = "#f0f0e5";
+  ctx.beginPath();
+  ctx.ellipse(0, 0, s * .70, s * .34, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#2467bd";
+  ctx.beginPath();
+  ctx.ellipse(-s * .18, wing * .2, s * .45, s * .18, -.25, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#20b85c";
+  ctx.beginPath();
+  ctx.arc(s * .43, -s * .22, s * .28, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#ffb126";
+  ctx.beginPath();
+  ctx.moveTo(s * .62, -s * .22);
+  ctx.lineTo(s * .93, -s * .12);
+  ctx.lineTo(s * .62, -s * .03);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = "#111";
+  ctx.beginPath();
+  ctx.arc(s * .50, -s * .29, s * .045, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function spawn() {
+  ducks.push(createDuck());
+}
+
+function startGame() {
+  score = 0;
+  round = 1;
+  timeLeft = settings[difficulty].time;
+  combo = 0;
+  comboTime = 0;
+  gameTime = 0;
+  ducks = [];
+  particles = [];
+  running = true;
+  paused = false;
+
+  overlay.classList.add("hidden");
+
+  const count = difficulty === "expert" ? 4 : settings[difficulty].count;
+  for (let i = 0; i < count; i++) {
+    spawn();
+  }
+  updateHUD();
+}
+
+function updateHUD() {
+  scoreEl.textContent = String(score).padStart(6, "0");
+  timeEl.textContent = difficulty === "expert" ? "∞" : String(Math.max(0, Math.ceil(timeLeft))).padStart(2, "0");
+  roundEl.textContent = difficulty === "expert" ? "∞" : String(round) + "/03";
+  ducksEl.textContent = difficulty === "expert" ? "∞" : String(ducks.length).padStart(2, "0");
+}
+
+function aimScanner(x, y) {
+  const dx = x - width / 2;
+  const dy = y - height;
+  const angle = Math.atan2(dx, -dy) * 180 / Math.PI;
+  const limited = Math.max(-28, Math.min(28, angle));
+
+  scanner.style.left = Math.max(20, Math.min(width - 20, x)) + "px";
+  scanner.style.setProperty("--angle", limited + "deg");
+  crosshair.style.left = x + "px";
+  crosshair.style.top = y + "px";
+}
+
+let beam = null;
+function scannerEffect(x, y) {
+  beam = { x: x, y: y, life: .18 };
+  scanner.classList.remove("active");
+  void scanner.offsetWidth;
+  scanner.classList.add("active");
+
+  for (let i = 0; i < 25; i++) {
+    particles.push({
+      x: x,
+      y: y,
+      vx: (Math.random() - .5) * 250,
+      vy: (Math.random() - .5) * 250,
+      life: 1
+    });
+  }
+}
+
+function drawBeam(dt) {
+  bctx.clearRect(0, 0, width, height);
+  if (!beam) return;
+
+  beam.life -= dt;
+  if (beam.life <= 0) {
+    beam = null;
+    return;
+  }
+
+  const startX = width / 2;
+  const startY = height - 10;
+  const gradient = bctx.createLinearGradient(startX, startY, beam.x, beam.y);
+  gradient.addColorStop(0, "#ffffff");
+  gradient.addColorStop(.2, "#35f7ff");
+  gradient.addColorStop(1, "rgba(43,108,255,0)");
+
+  bctx.save();
+  bctx.globalAlpha = Math.min(1, beam.life * 8);
+  bctx.strokeStyle = gradient;
+  bctx.lineWidth = 7;
+  bctx.shadowBlur = 18;
+  bctx.shadowColor = "#35eaff";
+  bctx.beginPath();
+  bctx.moveTo(startX, startY);
+  bctx.lineTo(beam.x, beam.y);
+  bctx.stroke();
+  bctx.restore();
+}
+
+function drawParticles(dt) {
+  fctx.clearRect(0, 0, width, height);
+  for (const p of particles) {
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.vy += 80 * dt;
+    p.life -= 2.5 * dt;
+
+    fctx.globalAlpha = Math.max(0, p.life);
+    fctx.fillStyle = p.life > .5 ? "#35eaff" : "#ffd42a";
+    fctx.fillRect(p.x, p.y, 3, 3);
+  }
+  fctx.globalAlpha = 1;
+  particles = particles.filter(p => p.life > 0);
+}
+
+function popup(x, y, value) {
+  const el = document.createElement("div");
+  el.className = "popup";
+  el.textContent = value;
+  el.style.left = x + "px";
+  el.style.top = y + "px";
+  game.appendChild(el);
+  setTimeout(() => el.remove(), 700);
+}
+
+function scan(x, y) {
+  if (!running || paused) return;
+  aimScanner(x, y);
+
+  let hit = -1;
+  for (let i = ducks.length - 1; i >= 0; i--) {
+    const d = ducks[i];
+    const dx = x - d.x;
+    const dy = y - d.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance < d.size * .85) {
+      hit = i;
+      break;
+    }
+  }
+
+  if (hit >= 0) {
+    const d = ducks[hit];
+    scannerEffect(d.x, d.y);
+    ducks.splice(hit, 1);
+    combo++;
+    comboTime = 2;
+
+    const points = 100 * Math.min(combo, 5);
+    score += points;
+    popup(d.x, d.y, "+" + points);
+
+    comboEl.textContent = "COMBO x" + combo;
+    comboEl.style.opacity = 1;
+
+    if (ducks.length === 0) {
+      nextRound();
+    }
+  } else {
+    scannerEffect(x, y);
+    combo = 0;
+    comboEl.style.opacity = 0;
+  }
+  updateHUD();
+}
+
+function nextRound() {
+  if (difficulty === "expert") {
+    for (let i = 0; i < 2; i++) spawn();
+    return;
+  }
+  if (round >= 3) {
+    finish(true);
+    return;
+  }
+  round++;
+  timeLeft = settings[difficulty].time;
+  const count = settings[difficulty].count;
+  for (let i = 0; i < count; i++) {
+    spawn();
+  }
+  updateHUD();
+}
+
+function finish(won) {
+  running = false;
+  paused = false;
+
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem("duckMudackHighScore", String(highScore));
+    highEl.textContent = String(highScore).padStart(6, "0");
+  }
+
+  overlay.classList.remove("hidden");
+  titleEl.textContent = won ? "MISSION COMPLETE!" : "TIME OVER";
+  messageEl.innerHTML = `Счёт: <b>${String(score).padStart(6, "0")}</b><br><br>Нажми START для новой игры.`;
+}
+
+document.getElementById("start").addEventListener("click", function() {
+  if (!running) {
+    startGame();
+    return;
+  }
+  paused = !paused;
+  if (paused) {
+    overlay.classList.remove("hidden");
+    titleEl.textContent = "PAUSED";
+    messageEl.innerHTML = `Игра приостановлена.<br><br>Нажми START / PAUSE, чтобы продолжить.`;
+  } else {
+    overlay.classList.add("hidden");
+  }
+});
+
+document.querySelectorAll(".diff").forEach(button => {
+  button.addEventListener("click", function(e) {
+    const btn = e.currentTarget;
+    document.querySelectorAll(".diff"ment.getElementById("combo");
 const overlay = document.getElementById("overlay");
 const titleEl = document.getElementById("title");
 const messageEl = document.getElementById("message");
