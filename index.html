@@ -7,841 +7,643 @@
 <title>DUCK MUDACK — SPACE OUTPOST</title>
 
 <style>
-:root{
- --cyan:#20e8ff;
- --blue:#286cff;
- --pink:#ff2bd6;
- --yellow:#ffd42a;
- --red:#ff3b30;
- --dark:#050711;
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
-*{box-sizing:border-box}
-
 html,body{
- margin:0;
- min-height:100%;
- background:#02030b;
- color:#fff;
- font-family:monospace;
+  margin:0;
+  width:100%;
+  min-height:100%;
+  background:#02030b;
+  color:white;
+  font-family:monospace;
 }
 
 body{
- display:flex;
- justify-content:center;
- padding:8px;
- background:
- radial-gradient(circle at 50% 0,#29105f,#070922 35%,#010208 80%);
+  padding:6px;
+  display:flex;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 50% 0,#29105f 0%,#070922 35%,#010208 85%);
 }
 
 .arcade{
- width:min(1100px,100%);
- background:linear-gradient(135deg,#070a15,#171020,#050711);
- border:3px solid #14182d;
- border-radius:22px;
- overflow:hidden;
- box-shadow:
- 0 0 0 2px #252a48,
- 0 0 45px #153cff66,
- 0 0 120px #ff20d033;
+  width:min(1100px,100%);
+  overflow:hidden;
+  border:3px solid #151a32;
+  border-radius:18px;
+  background:#070a15;
+  box-shadow:
+    0 0 0 2px #292e4c,
+    0 0 45px #153cff55;
 }
 
-/* =========================
-   MARQUEE
-========================= */
+/* HEADER */
 
 .marquee{
- position:relative;
- text-align:center;
- padding:12px 20px 10px;
- min-height:105px;
-
- background:
- radial-gradient(circle at 20% 50%,#692cff66,transparent 18%),
- radial-gradient(circle at 80% 40%,#00cfff55,transparent 22%),
- #070925;
-
- border-bottom:5px solid #121936;
+  position:relative;
+  padding:15px 10px 12px;
+  text-align:center;
+  background:
+    radial-gradient(circle at 20% 50%,#692cff55,transparent 20%),
+    radial-gradient(circle at 80% 40%,#00cfff55,transparent 20%),
+    #070925;
+  border-bottom:5px solid #121936;
 }
 
 .marquee h1{
- margin:3px 0 0;
-
- font-size:clamp(38px,6vw,68px);
- line-height:.9;
- letter-spacing:-4px;
-
- color:#ffd52c;
-
- text-shadow:
- 4px 4px #e52225,
- 8px 8px #15175d,
- 0 0 20px #ffcc27;
+  margin:0;
+  font-size:clamp(34px,7vw,68px);
+  line-height:.9;
+  letter-spacing:-4px;
+  color:#ffd52c;
+  text-shadow:
+    4px 4px #e52225,
+    8px 8px #15175d,
+    0 0 20px #ffcc27;
 }
 
 .marquee h1 span{
- color:#ffef58;
+  color:#ffef58;
 }
 
 .sub{
- margin-top:7px;
-
- color:#20eaff;
-
- font-size:clamp(13px,2.4vw,23px);
- font-weight:bold;
-
- text-shadow:0 0 12px #00eaff;
+  margin-top:7px;
+  color:#20eaff;
+  font-size:clamp(13px,2.5vw,23px);
+  font-weight:bold;
+  text-shadow:0 0 12px #00eaff;
 }
 
-.duck-deco{
- position:absolute;
- top:25px;
- font-size:36px;
+.duck{
+  position:absolute;
+  top:25px;
+  font-size:34px;
 }
 
-.duck-deco.left{left:25px}
-.duck-deco.right{
- right:25px;
- transform:scaleX(-1);
+.duck.left{
+  left:20px;
 }
 
-/* =========================
-   SCREEN
-========================= */
+.duck.right{
+  right:20px;
+  transform:scaleX(-1);
+}
 
-.screen-frame{
- margin:12px 18px 0;
- padding:9px;
+/* GAME */
 
- background:#05070e;
-
- border:4px solid #141a32;
- border-radius:16px;
-
- box-shadow:inset 0 0 30px #000;
+.screen{
+  margin:10px 15px 0;
+  padding:7px;
+  border:4px solid #141a32;
+  border-radius:14px;
+  background:#05070e;
 }
 
 .game{
- position:relative;
-
- width:100%;
-
- height:70vh;
- min-height:460px;
- max-height:760px;
-
- overflow:hidden;
-
- border:4px solid #0bd7ff;
- border-radius:7px;
-
- background:#050820;
-
- cursor:none;
- touch-action:none;
+  position:relative;
+  width:100%;
+  height:min(70vh,700px);
+  min-height:420px;
+  overflow:hidden;
+  border:4px solid #0bd7ff;
+  border-radius:7px;
+  background:#050820;
+  touch-action:none;
+  cursor:none;
 }
 
 canvas{
- position:absolute;
- inset:0;
-
- width:100%;
- height:100%;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
 }
 
 #fx,
-#beamCanvas{
- pointer-events:none;
+#beam{
+  pointer-events:none;
 }
 
-/* =========================
-   CRT
-========================= */
-
-.crt{
- position:absolute;
- inset:0;
- pointer-events:none;
-
- background:
- repeating-linear-gradient(
-  to bottom,
-  transparent 0 3px,
-  #00000024 3px 5px
- );
-}
-
-.vignette{
- position:absolute;
- inset:0;
- pointer-events:none;
-
- box-shadow:
- inset 0 0 90px #000d,
- inset 0 0 8px #00d9ff66;
-}
-
-/* =========================
-   HUD
-========================= */
+/* HUD */
 
 .hud{
- position:absolute;
- z-index:6;
+  position:absolute;
+  z-index:10;
+  top:8px;
+  left:8px;
+  right:8px;
 
- top:8px;
- left:8px;
- right:8px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
 
- display:flex;
- justify-content:space-between;
-
- gap:7px;
-
- pointer-events:none;
+  pointer-events:none;
 }
 
 .hudbox{
- min-width:105px;
-
- padding:5px 9px;
-
- border:2px solid var(--cyan);
- border-radius:6px;
-
- text-align:center;
-
- background:#020922d9;
-
- box-shadow:0 0 10px #00d9ff55;
+  padding:5px;
+  border:2px solid #20e8ff;
+  border-radius:5px;
+  text-align:center;
+  background:#020922dd;
+  box-shadow:0 0 10px #00d9ff44;
 }
 
 .hudbox small{
- display:block;
- color:var(--cyan);
- font-size:10px;
+  display:block;
+  color:#20e8ff;
+  font-size:9px;
 }
 
 .hudbox b{
- font-size:19px;
- text-shadow:0 0 8px #fff;
+  display:block;
+  margin-top:2px;
+  font-size:18px;
 }
 
-.hudbox:last-child b{
- color:var(--yellow);
-}
-
-/* =========================
-   ENERGY
-========================= */
+/* ENERGY */
 
 .energy{
- position:absolute;
- z-index:7;
+  position:absolute;
+  z-index:10;
+  bottom:9px;
+  left:9px;
 
- bottom:10px;
- left:10px;
+  padding:5px 9px;
 
- display:flex;
- align-items:center;
+  border:2px solid #20dfff;
+  border-radius:5px;
 
- gap:7px;
+  background:#020922dd;
+  color:#35efff;
 
- padding:5px 9px;
+  font-size:14px;
+  font-weight:bold;
 
- border:2px solid #20dfff;
- border-radius:6px;
-
- background:#020922cc;
-
- color:#35efff;
-
- font-size:15px;
- font-weight:900;
-
- text-shadow:
- 0 0 8px #35efff,
- 0 0 15px #35efff;
+  text-shadow:0 0 10px #35efff;
 }
 
-.energy b{
- font-size:22px;
+.energy strong{
+  font-size:20px;
 }
 
-/* =========================
-   COMBO
-========================= */
+/* COMBO */
 
 .combo{
- position:absolute;
- z-index:7;
+  position:absolute;
+  z-index:10;
+  right:9px;
+  bottom:9px;
 
- right:10px;
- bottom:10px;
+  padding:6px 10px;
 
- padding:6px 10px;
+  border:2px solid #ffd42a;
+  border-radius:5px;
 
- border:2px solid var(--yellow);
- border-radius:6px;
+  background:#09091ddd;
+  color:#ffd42a;
 
- background:#09091ddd;
+  font-size:16px;
+  font-weight:bold;
 
- color:var(--yellow);
-
- font-size:17px;
- font-weight:bold;
-
- opacity:0;
-
- transition:.12s;
-}
-
-/* =========================
-   SCORE POP
-========================= */
-
-.score-pop{
- position:absolute;
- z-index:9;
-
- color:#ffe84b;
-
- font-size:22px;
- font-weight:900;
-
- text-shadow:
- 2px 2px #e52323,
- 0 0 12px #ffbd19;
-
- pointer-events:none;
-
- animation:
- scorePop .65s ease-out forwards;
-}
-
-@keyframes scorePop{
- 0%{
-  transform:
-   translate(-50%,-20%)
-   scale(.7);
   opacity:0;
- }
-
- 20%{opacity:1}
-
- 100%{
-  transform:
-   translate(-50%,-120%)
-   scale(1.25);
-  opacity:0;
- }
+  transition:.12s;
 }
 
-/* =========================
-   SCANNER
-========================= */
-
-#scanner{
- position:absolute;
-
- z-index:7;
-
- left:50%;
- bottom:-12px;
-
- width:116px;
- height:170px;
-
- transform:
-  translateX(-50%)
-  rotate(0deg);
-
- transform-origin:50% 92%;
-
- pointer-events:none;
-
- filter:
-  drop-shadow(0 0 12px #00d9ff);
-
- transition:
-  left .11s ease-out,
-  transform .11s ease-out;
-}
-
-.scanner-body{
- position:absolute;
-
- left:27px;
- bottom:0;
-
- width:62px;
- height:125px;
-
- background:
-  linear-gradient(
-   90deg,
-   #152a48,
-   #d4f7ff 45%,
-   #254b78
-  );
-
- clip-path:
- polygon(
-  27% 0,
-  73% 0,
-  100% 100%,
-  0 100%
- );
-
- border:3px solid #071a35;
-}
-
-.scanner-core{
- position:absolute;
-
- left:45px;
- bottom:18px;
-
- width:25px;
- height:80px;
-
- border-radius:8px;
-
- background:#43f5ff;
-
- box-shadow:
- 0 0 18px #43f5ff,
- 0 0 35px #287cff;
-}
-
-.scanner-glow{
- position:absolute;
-
- left:44px;
- bottom:112px;
-
- width:28px;
- height:85px;
-
- border-radius:50%;
-
- background:
- linear-gradient(
-   #fff,
-   #42f7ff 35%,
-   transparent
-  );
-
- filter:blur(5px);
-
- opacity:.12;
-}
-
-#scanner.scan{
- animation:
-  scanPulse .16s ease-out;
-}
-
-#scanner.scan .scanner-glow{
- opacity:1;
-
- animation:
- beamGlow .16s;
-}
-
-@keyframes scanPulse{
- 0%{margin-top:0}
-
- 45%{
-  margin-top:17px;
-
-  transform:
-   translateX(-50%)
-   rotate(var(--aim,0deg))
-   scale(.95);
- }
-
- 100%{margin-top:0}
-}
-
-@keyframes beamGlow{
- 0%{height:85px}
- 50%{height:210px}
- 100%{height:85px}
-}
-
-/* =========================
-   CROSSHAIR
-========================= */
+/* CROSSHAIR */
 
 #crosshair{
- position:absolute;
+  position:absolute;
+  z-index:20;
 
- z-index:8;
+  width:52px;
+  height:52px;
 
- width:54px;
- height:54px;
+  margin:-26px 0 0 -26px;
 
- margin:-27px 0 0 -27px;
+  border:2px solid #ff5b43;
+  border-radius:50%;
 
- pointer-events:none;
+  pointer-events:none;
 
- border:2px solid #ff5b43;
- border-radius:50%;
-
- box-shadow:
- 0 0 12px #ff392f;
-}
-
-#crosshair:before,
-#crosshair:after{
- content:"";
-
- position:absolute;
-
- background:#ff604c;
+  box-shadow:0 0 12px #ff392f;
 }
 
 #crosshair:before{
- width:70px;
- height:2px;
-
- left:-10px;
- top:24px;
+  content:"";
+  position:absolute;
+  width:68px;
+  height:2px;
+  left:-10px;
+  top:23px;
+  background:#ff604c;
 }
 
 #crosshair:after{
- width:2px;
- height:70px;
-
- left:24px;
- top:-10px;
+  content:"";
+  position:absolute;
+  width:2px;
+  height:68px;
+  left:23px;
+  top:-10px;
+  background:#ff604c;
 }
 
-.cross-dot{
- position:absolute;
-
- width:6px;
- height:6px;
-
- left:22px;
- top:22px;
-
- border-radius:50%;
-
- background:#fff;
-
- box-shadow:0 0 8px #fff;
+.dot{
+  position:absolute;
+  width:6px;
+  height:6px;
+  left:21px;
+  top:21px;
+  border-radius:50%;
+  background:white;
+  box-shadow:0 0 8px white;
 }
 
-/* =========================
-   OVERLAY
-========================= */
+/* SCANNER */
+
+#scanner{
+  position:absolute;
+  z-index:15;
+
+  width:100px;
+  height:135px;
+
+  left:50%;
+  bottom:-10px;
+
+  transform:
+    translateX(-50%)
+    rotate(0deg);
+
+  transform-origin:50% 90%;
+
+  pointer-events:none;
+
+  filter:drop-shadow(0 0 12px #00eaff);
+
+  transition:
+    left .12s ease-out,
+    transform .12s ease-out;
+}
+
+.scanner-body{
+  position:absolute;
+
+  left:25px;
+  bottom:0;
+
+  width:50px;
+  height:105px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #132743,
+      #d4f7ff 45%,
+      #254b78
+    );
+
+  clip-path:
+    polygon(
+      25% 0,
+      75% 0,
+      100% 100%,
+      0 100%
+    );
+
+  border:3px solid #071a35;
+}
+
+.scanner-core{
+  position:absolute;
+
+  left:38px;
+  bottom:15px;
+
+  width:24px;
+  height:65px;
+
+  border-radius:8px;
+
+  background:#43f5ff;
+
+  box-shadow:
+    0 0 18px #43f5ff,
+    0 0 35px #287cff;
+}
+
+.scanner-glow{
+  position:absolute;
+
+  left:37px;
+  bottom:90px;
+
+  width:26px;
+  height:70px;
+
+  border-radius:50%;
+
+  background:
+    linear-gradient(
+      #fff,
+      #42f7ff 35%,
+      transparent
+    );
+
+  filter:blur(5px);
+
+  opacity:.12;
+}
+
+#scanner.active{
+  animation:scan .18s ease-out;
+}
+
+#scanner.active .scanner-glow{
+  opacity:1;
+}
+
+@keyframes scan{
+  0%{
+    transform:
+      translateX(-50%)
+      rotate(var(--angle,0deg))
+      scale(1);
+  }
+
+  45%{
+    transform:
+      translateX(-50%)
+      rotate(var(--angle,0deg))
+      scale(.92);
+  }
+
+  100%{
+    transform:
+      translateX(-50%)
+      rotate(var(--angle,0deg))
+      scale(1);
+  }
+}
+
+/* OVERLAY */
 
 .overlay{
- position:absolute;
- inset:0;
+  position:absolute;
+  z-index:30;
+  inset:0;
 
- z-index:15;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
- display:flex;
-
- align-items:center;
- justify-content:center;
-
- background:#02030bd9;
-
- text-align:center;
+  background:#02030bd9;
 }
 
 .overlay.hidden{
- display:none;
+  display:none;
 }
 
 .card{
- width:min(520px,90%);
+  width:min(500px,90%);
+  padding:25px;
 
- padding:24px;
+  border:3px solid #20e8ff;
+  border-radius:12px;
 
- border:3px solid var(--cyan);
- border-radius:13px;
+  background:#060a1bef;
 
- background:#060a1bef;
+  text-align:center;
 
- box-shadow:
- 0 0 35px #00d9ff55;
+  box-shadow:0 0 35px #00d9ff55;
 }
 
 .card h2{
- margin:0 0 10px;
+  margin:0 0 12px;
 
- color:#ffd42a;
+  color:#ffd42a;
 
- font-size:32px;
+  font-size:30px;
 
- text-shadow:
- 3px 3px #f22;
+  text-shadow:3px 3px #f22;
 }
 
 .card p{
- color:#b8eaff;
- line-height:1.5;
+  color:#b8eaff;
+  line-height:1.5;
 }
 
-/* =========================
-   CONTROLS
-========================= */
+/* CONTROLS */
 
 .controls{
- display:grid;
+  display:grid;
+  grid-template-columns:1fr .8fr 1fr;
+  gap:9px;
 
- grid-template-columns:
- 1fr
- .85fr
- 1fr;
-
- gap:10px;
-
- padding:10px 18px 8px;
+  padding:9px 15px;
 }
 
 .panel{
- padding:9px;
+  padding:9px;
 
- border:2px solid #1634a4;
- border-radius:8px;
+  border:2px solid #1634a4;
+  border-radius:7px;
 
- background:#070b1bd9;
-
- box-shadow:
-  inset 0 0 20px #0b1b4d;
+  background:#070b1bd9;
 }
 
 .panel h3{
- margin:0 0 6px;
-
- text-align:center;
-
- color:#20e8ff;
-
- font-size:14px;
+  margin:0 0 7px;
+  text-align:center;
+  color:#20e8ff;
+  font-size:13px;
 }
 
 .difficulty{
- display:grid;
-
- grid-template-columns:
- repeat(3,1fr);
-
- gap:6px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
 }
 
 .diff{
- min-height:52px;
+  min-height:52px;
 
- padding:5px;
+  border:2px solid #1b5b94;
+  border-radius:4px;
 
- border:2px solid #1b5b94;
- border-radius:4px;
+  background:#06112b;
+  color:#b7d9ff;
 
- background:#06112b;
+  font:700 12px monospace;
 
- color:#b7d9ff;
-
- font:700 13px monospace;
-
- cursor:pointer;
-
- transition:.1s;
+  cursor:pointer;
 }
 
-.diff:hover,
 .diff.active{
- border-color:#ffd42a;
-
- color:#fff;
-
- box-shadow:
- 0 0 12px #ffd42a55;
-
- transform:translateY(-2px);
+  border-color:#ffd42a;
+  color:white;
+  box-shadow:0 0 12px #ffd42a55;
 }
 
 .diff em{
- display:block;
-
- margin-top:3px;
-
- color:#83a4c9;
-
- font-size:9px;
- font-style:normal;
+  display:block;
+  margin-top:4px;
+  color:#83a4c9;
+  font-size:8px;
+  font-style:normal;
 }
 
-/* =========================
-   START
-========================= */
-
 .start{
- width:100%;
- height:68px;
+  width:100%;
+  height:67px;
 
- border-radius:5px;
- border:3px solid #7b1717;
+  border:3px solid #7b1717;
+  border-radius:5px;
 
- background:
- linear-gradient(
-  #ff6b55,
-  #d91414 55%,
-  #8c0505
- );
+  background:
+    linear-gradient(
+      #ff6b55,
+      #d91414 55%,
+      #8c0505
+    );
 
- color:#fff;
+  color:white;
 
- font:900 18px monospace;
- line-height:1;
+  font:900 17px monospace;
 
- cursor:pointer;
+  cursor:pointer;
 
- box-shadow:
- 0 0 0 3px #14152a,
- 0 0 22px #ff222255,
- inset 0 -7px 12px #5a0000;
+  box-shadow:
+    0 0 0 3px #14152a,
+    0 0 20px #ff222244;
 }
 
 .start:active{
- transform:translateY(3px);
+  transform:translateY(2px);
 }
 
 .tip{
- text-align:center;
-
- color:#7399c9;
-
- font-size:10px;
-
- margin-top:5px;
+  margin-top:5px;
+  text-align:center;
+  color:#7399c9;
+  font-size:9px;
 }
 
 .art{
- min-height:68px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:67px;
 
- display:flex;
- align-items:center;
- justify-content:center;
-
- color:#ff8b21;
-
- font-size:16px;
- font-weight:bold;
-
- text-align:center;
-
- text-shadow:2px 2px #bf1720;
+  color:#ff8b21;
+  font-weight:bold;
+  text-align:center;
 }
 
-/* =========================
-   HIGH SCORE
-========================= */
+/* HIGH SCORE */
 
 .bottom{
- padding:8px 20px 12px;
+  padding:9px;
+  text-align:center;
 
- border-top:3px solid #111a3b;
+  border-top:3px solid #111a3b;
 
- text-align:center;
-
- color:#ffd42a;
-
- font-size:22px;
-
- text-shadow:
- 0 0 9px #ffbd19;
+  color:#ffd42a;
+  font-size:20px;
 }
 
 .bottom span{
- margin-right:8px;
-
- color:#c6dcff;
-
- font-size:12px;
+  margin-right:7px;
+  color:#c6dcff;
+  font-size:11px;
 }
 
-/* =========================
-   MOBILE
-========================= */
+/* POPUP */
+
+.popup{
+  position:absolute;
+  z-index:50;
+
+  color:#ffe84b;
+
+  font-size:21px;
+  font-weight:bold;
+
+  pointer-events:none;
+
+  text-shadow:
+    2px 2px #e52323,
+    0 0 12px #ffbd19;
+
+  animation:popup .7s forwards;
+}
+
+@keyframes popup{
+  from{
+    opacity:0;
+    transform:translate(-50%,0) scale(.7);
+  }
+
+  20%{
+    opacity:1;
+  }
+
+  to{
+    opacity:0;
+    transform:translate(-50%,-70px) scale(1.2);
+  }
+}
+
+/* MOBILE */
 
 @media(max-width:760px){
 
- body{
-  padding:3px;
- }
+  body{
+    padding:2px;
+  }
 
- .arcade{
-  border-radius:10px;
- }
+  .arcade{
+    border-radius:9px;
+  }
 
- .marquee{
-  min-height:82px;
- }
+  .duck{
+    display:none;
+  }
 
- .duck-deco{
-  display:none;
- }
+  .screen{
+    margin:6px;
+    padding:4px;
+  }
 
- .screen-frame{
-  margin:7px 6px 0;
-  padding:5px;
- }
+  .game{
+    min-height:390px;
+    height:70vh;
+  }
 
- .game{
-  height:70vh;
-  min-height:390px;
- }
+  .hudbox{
+    padding:3px;
+  }
 
- .hudbox{
-  min-width:0;
-  padding:3px 5px;
- }
+  .hudbox small{
+    font-size:7px;
+  }
 
- .hudbox small{
-  font-size:7px;
- }
+  .hudbox b{
+    font-size:13px;
+  }
 
- .hudbox b{
-  font-size:13px;
- }
+  .controls{
+    grid-template-columns:1fr;
+    padding:6px;
+  }
 
- .controls{
-  grid-template-columns:1fr;
-  padding:6px;
- }
-
- .difficulty{
-  grid-template-columns:
-  1fr 1fr 1fr;
- }
-
- .diff{
-  font-size:11px;
- }
-
- .diff em{
-  font-size:8px;
- }
-
- .start{
-  height:62px;
- }
-
- .art{
-  min-height:62px;
- }
-
- .bottom{
-  font-size:18px;
- }
+  .bottom{
+    font-size:17px;
+  }
 }
 </style>
 </head>
@@ -850,880 +652,942 @@ canvas{
 
 <div class="arcade">
 
-<header class="marquee">
+  <header class="marquee">
 
- <div class="duck-deco left">🦆</div>
- <div class="duck-deco right">🦆</div>
+    <div class="duck left">🦆</div>
+    <div class="duck right">🦆</div>
 
- <h1>
-  DUCK <span>✦</span> MUDACK
- </h1>
+    <h1>
+      DUCK <span>✦</span> MUDACK
+    </h1>
 
- <div class="sub">
-  SPACE OUTPOST
- </div>
+    <div class="sub">
+      SPACE OUTPOST
+    </div>
 
-</header>
+  </header>
 
-<section class="screen-frame">
 
-<div class="game" id="game">
+  <section class="screen">
 
- <canvas id="scene"></canvas>
- <canvas id="beamCanvas"></canvas>
- <canvas id="fx"></canvas>
+    <div class="game" id="game">
 
- <div class="hud">
+      <canvas id="scene"></canvas>
+      <canvas id="beam"></canvas>
+      <canvas id="fx"></canvas>
 
-  <div class="hudbox">
-   <small>SCORE</small>
-   <b id="score">000000</b>
-  </div>
 
-  <div class="hudbox">
-   <small>TIME</small>
-   <b id="time">45</b>
-  </div>
+      <div class="hud">
 
-  <div class="hudbox">
-   <small>ROUND</small>
-   <b id="round">01/03</b>
-  </div>
+        <div class="hudbox">
+          <small>SCORE</small>
+          <b id="score">000000</b>
+        </div>
 
-  <div class="hudbox">
-   <small>DUCKS LEFT</small>
-   <b id="ducksLeft">00</b>
-  </div>
+        <div class="hudbox">
+          <small>TIME</small>
+          <b id="time">45</b>
+        </div>
 
- </div>
+        <div class="hudbox">
+          <small>ROUND</small>
+          <b id="round">01/03</b>
+        </div>
 
- <div class="energy">
-  ENERGY
-  <b>∞</b>
- </div>
+        <div class="hudbox">
+          <small>DUCKS</small>
+          <b id="ducks">00</b>
+        </div>
 
- <div class="combo" id="combo">
-  COMBO x2
- </div>
+      </div>
 
- <div id="crosshair">
-  <div class="cross-dot"></div>
- </div>
 
- <div id="scanner">
+      <div class="energy">
+        ENERGY <strong>∞</strong>
+      </div>
 
-  <div class="scanner-glow"></div>
-  <div class="scanner-body"></div>
-  <div class="scanner-core"></div>
 
- </div>
+      <div class="combo" id="combo">
+        COMBO x2
+      </div>
 
- <div class="crt"></div>
- <div class="vignette"></div>
 
- <div class="overlay" id="overlay">
+      <div id="crosshair">
+        <div class="dot"></div>
+      </div>
 
-  <div class="card">
 
-   <h2 id="overlayTitle">
-    DUCK MUDACK
-   </h2>
+      <div id="scanner">
 
-   <p id="overlayText">
-    Выбери сложность и нажми START.<br>
-    Наведи сканер на утку и нажми на неё.
-   </p>
+        <div class="scanner-glow"></div>
+        <div class="scanner-body"></div>
+        <div class="scanner-core"></div>
 
-  </div>
+      </div>
 
- </div>
+
+      <div class="overlay" id="overlay">
+
+        <div class="card">
+
+          <h2 id="title">
+            DUCK MUDACK
+          </h2>
+
+          <p id="message">
+            Выбери сложность и нажми START.<br><br>
+            Наводи сканер и нажимай на уток.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section class="controls">
+
+
+    <div class="panel">
+
+      <h3>✦ DIFFICULTY ✦</h3>
+
+      <div class="difficulty">
+
+        <button
+          class="diff"
+          data-level="easy"
+        >
+          EASY
+          <em>6 DUCKS</em>
+        </button>
+
+        <button
+          class="diff active"
+          data-level="normal"
+        >
+          NORMAL
+          <em>12 DUCKS</em>
+        </button>
+
+        <button
+          class="diff"
+          data-level="expert"
+        >
+          EXPERT
+          <em>ENDLESS</em>
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="panel">
+
+      <button
+        class="start"
+        id="start"
+      >
+        START<br>
+        ▶ / ❚❚<br>
+        PAUSE
+      </button>
+
+      <div class="tip">
+        TAP DUCK = SCAN
+      </div>
+
+    </div>
+
+
+    <div class="panel art">
+      🦆 SCAN THE DUCKS! ✦
+    </div>
+
+  </section>
+
+
+  <footer class="bottom">
+
+    <span>🏆 HIGH SCORE</span>
+
+    <b id="highScore">
+      000000
+    </b>
+
+  </footer>
 
 </div>
 
-</section>
-
-<section class="controls">
-
- <div class="panel">
-
-  <h3>✦ DIFFICULTY ✦</h3>
-
-  <div class="difficulty">
-
-   <button class="diff" data-level="easy">
-    EASY
-    <em>SLOW • 6 DUCKS</em>
-   </button>
-
-   <button class="diff active" data-level="normal">
-    NORMAL
-    <em>NORMAL • 12 DUCKS</em>
-   </button>
-
-   <button class="diff" data-level="expert">
-    EXPERT
-    <em>ENDLESS • ACCELERATING</em>
-   </button>
-
-  </div>
-
- </div>
-
- <div class="panel">
-
-  <button class="start" id="start">
-   START<br>
-   ▶ / ❚❚<br>
-   PAUSE
-  </button>
-
-  <div class="tip">
-   ∞ ENERGY • Клик / тап по утке = SCAN
-  </div>
-
- </div>
-
- <div class="panel art">
-  🦆 &nbsp; SCAN THE DUCKS! &nbsp; ✦
- </div>
-
-</section>
-
-<footer class="bottom">
-
- <span>🏆 HIGH SCORE</span>
-
- <b id="highScore">000000</b>
-
-</footer>
-
-</div>
 
 <script>
+"use strict";
 
-/* =========================================
+/* =====================================================
    DUCK MUDACK
-   TELEGRAM MINI APP READY
-========================================= */
+   SIMPLE STABLE VERSION
+===================================================== */
 
-const game=document.getElementById("game");
-const scene=document.getElementById("scene");
-const fx=document.getElementById("fx");
-const beamCanvas=document.getElementById("beamCanvas");
+const game =
+  document.getElementById("game");
 
-const ctx=scene.getContext("2d");
-const fctx=fx.getContext("2d");
-const bctx=beamCanvas.getContext("2d");
+const scene =
+  document.getElementById("scene");
 
-const scoreEl=document.getElementById("score");
-const timeEl=document.getElementById("time");
-const roundEl=document.getElementById("round");
-const leftEl=document.getElementById("ducksLeft");
-const highEl=document.getElementById("highScore");
+const beamCanvas =
+  document.getElementById("beam");
 
-const comboEl=document.getElementById("combo");
+const fx =
+  document.getElementById("fx");
 
-const overlay=document.getElementById("overlay");
-const overlayTitle=document.getElementById("overlayTitle");
-const overlayText=document.getElementById("overlayText");
+const ctx =
+  scene.getContext("2d");
 
-const scanner=document.getElementById("scanner");
-const crosshair=document.getElementById("crosshair");
+const bctx =
+  beamCanvas.getContext("2d");
 
-const levels={
+const fctx =
+  fx.getContext("2d");
 
- easy:{
-  count:6,
-  speed:.8,
-  time:45
- },
 
- normal:{
-  count:12,
-  speed:1.25,
-  time:45
- },
+const scoreEl =
+  document.getElementById("score");
 
- expert:{
-  count:21,
-  speed:1.8,
-  time:Infinity
- }
+const timeEl =
+  document.getElementById("time");
+
+const roundEl =
+  document.getElementById("round");
+
+const ducksEl =
+  document.getElementById("ducks");
+
+const highEl =
+  document.getElementById("highScore");
+
+const comboEl =
+  document.getElementById("combo");
+
+const overlay =
+  document.getElementById("overlay");
+
+const titleEl =
+  document.getElementById("title");
+
+const messageEl =
+  document.getElementById("message");
+
+const scanner =
+  document.getElementById("scanner");
+
+const crosshair =
+  document.getElementById("crosshair");
+
+
+/* =====================================================
+   GAME SETTINGS
+===================================================== */
+
+const settings = {
+
+  easy:{
+    count:6,
+    speed:80,
+    time:45
+  },
+
+  normal:{
+    count:12,
+    speed:120,
+    time:45
+  },
+
+  expert:{
+    count:4,
+    speed:150,
+    time:Infinity
+  }
 
 };
 
-let level="normal";
 
-let W=1000;
-let H=625;
-let dpr=1;
+let difficulty = "normal";
 
-let running=false;
-let paused=false;
+let width = 1000;
+let height = 600;
 
-let score=0;
-let round=1;
-let timeLeft=45;
+let running = false;
+let paused = false;
 
-let ducks=[];
-let particles=[];
-let stars=[];
+let score = 0;
+let round = 1;
+let timeLeft = 45;
 
-let combo=0;
-let comboTimer=0;
+let combo = 0;
+let comboTime = 0;
 
-let high=Number(
- localStorage.getItem("duckMudackHigh")||0
-);
+let ducks = [];
+let particles = [];
+let stars = [];
 
-let elapsedGameTime=0;
+let lastTime = 0;
+let gameTime = 0;
 
-let beam={
- active:false,
- x2:0,
- y2:0,
- life:0
-};
-
-highEl.textContent=
- String(high).padStart(6,"0");
+let highScore =
+  Number(
+    localStorage.getItem(
+      "duckMudackHighScore"
+    ) || 0
+  );
 
 
-/* =========================================
-   TELEGRAM MINI APP
-========================================= */
-
-const telegram =
- window.Telegram &&
- window.Telegram.WebApp
- ? window.Telegram.WebApp
- : null;
-
-if(telegram){
-
- telegram.ready();
-
- telegram.expand();
-
- try{
-  telegram.setHeaderColor("#050711");
-  telegram.setBackgroundColor("#02030b");
- }catch(e){}
-
-}
+highEl.textContent =
+  String(highScore).padStart(6,"0");
 
 
-/* =========================================
-   STARS
-========================================= */
-
-for(let i=0;i<150;i++){
-
- stars.push({
-
-  x:Math.random(),
-  y:Math.random()*.78,
-
-  s:Math.random()*2.2+.4,
-
-  a:Math.random()*.8+.2,
-
-  speed:
-   Math.random()*.9+.25,
-
-  drift:
-   Math.random()*.35+.08,
-
-  tail:
-   Math.random()*18+6,
-
-  phase:
-   Math.random()*Math.PI*2
-
- });
-
-}
-
-
-/* =========================================
+/* =====================================================
    RESIZE
-========================================= */
+===================================================== */
 
 function resize(){
 
- dpr=Math.min(
-  devicePixelRatio||1,
-  2
- );
+  const rect =
+    game.getBoundingClientRect();
 
- const r=
-  game.getBoundingClientRect();
+  width = rect.width;
+  height = rect.height;
 
- W=r.width;
- H=r.height;
+  const ratio =
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
+    );
 
- for(const c of [
-  scene,
-  fx,
-  beamCanvas
- ]){
+  [scene,beamCanvas,fx].forEach(canvas=>{
 
-  c.width=W*dpr;
-  c.height=H*dpr;
+    canvas.width =
+      Math.floor(width * ratio);
 
-  c.style.width=W+"px";
-  c.style.height=H+"px";
+    canvas.height =
+      Math.floor(height * ratio);
 
- }
+    canvas.style.width =
+      width + "px";
 
- ctx.setTransform(
-  dpr,0,0,dpr,0,0
- );
+    canvas.style.height =
+      height + "px";
 
- fctx.setTransform(
-  dpr,0,0,dpr,0,0
- );
+  });
 
- bctx.setTransform(
-  dpr,0,0,dpr,0,0
- );
+  ctx.setTransform(
+    ratio,0,0,ratio,0,0
+  );
+
+  bctx.setTransform(
+    ratio,0,0,ratio,0,0
+  );
+
+  fctx.setTransform(
+    ratio,0,0,ratio,0,0
+  );
 
 }
 
 window.addEventListener(
- "resize",
- resize
+  "resize",
+  resize
 );
 
 resize();
 
 
-/* =========================================
+/* =====================================================
+   STARS
+===================================================== */
+
+for(
+  let i=0;
+  i<130;
+  i++
+){
+
+  stars.push({
+
+    x:Math.random(),
+    y:Math.random(),
+
+    size:
+      Math.random()*2+.4,
+
+    speed:
+      Math.random()*.12+.03,
+
+    alpha:
+      Math.random()*.8+.2
+
+  });
+
+}
+
+
+/* =====================================================
    BACKGROUND
-========================================= */
+===================================================== */
 
-function drawBackground(t){
+function background(dt){
 
- const time=t*.001;
+  const t =
+    performance.now()/1000;
 
- const g=
-  ctx.createLinearGradient(
-   0,0,0,H
+
+  /* SPACE */
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,0,
+      0,height
+    );
+
+  gradient.addColorStop(
+    0,
+    "#020725"
   );
 
- g.addColorStop(
-  0,
-  "#020725"
- );
-
- g.addColorStop(
-  .45,
-  "#24105b"
- );
-
- g.addColorStop(
-  .72,
-  "#35145f"
- );
-
- g.addColorStop(
-  1,
-  "#06182d"
- );
-
- ctx.fillStyle=g;
-
- ctx.fillRect(
-  0,0,W,H
- );
-
-
- const nebula=
-  ctx.createRadialGradient(
-   W*.52,
-   H*.25,
-   0,
-   W*.52,
-   H*.25,
-   W*.55
+  gradient.addColorStop(
+    .45,
+    "#24105b"
   );
 
- nebula.addColorStop(
-  0,
-  "rgba(50,90,255,.18)"
- );
-
- nebula.addColorStop(
-  .45,
-  "rgba(160,30,255,.10)"
- );
-
- nebula.addColorStop(
-  1,
-  "rgba(0,0,0,0)"
- );
-
- ctx.fillStyle=nebula;
-
- ctx.fillRect(
-  0,0,W,H*.75
- );
-
-
- /* FRAME-RATE INDEPENDENT STAR MOTION */
-
- const dt =
-  Math.min(
-   (t-(drawBackground.lastTime||t))/1000,
-   .05
+  gradient.addColorStop(
+    1,
+    "#06182d"
   );
 
- drawBackground.lastTime=t;
+  ctx.fillStyle =
+    gradient;
 
- for(const s of stars){
+  ctx.fillRect(
+    0,0,
+    width,height
+  );
 
-  s.y +=
-   s.speed *
-   .09 *
-   dt;
 
-  s.x +=
-   s.drift *
-   .018 *
-   dt;
+  /* NEBULA */
 
-  if(s.y>1.05){
+  const nebula =
+    ctx.createRadialGradient(
+      width*.5,
+      height*.3,
+      0,
+      width*.5,
+      height*.3,
+      width*.6
+    );
 
-   s.y=-Math.random()*.15;
-   s.x=Math.random()*1.05;
+  nebula.addColorStop(
+    0,
+    "rgba(80,60,255,.20)"
+  );
+
+  nebula.addColorStop(
+    .5,
+    "rgba(180,30,255,.08)"
+  );
+
+  nebula.addColorStop(
+    1,
+    "rgba(0,0,0,0)"
+  );
+
+  ctx.fillStyle =
+    nebula;
+
+  ctx.fillRect(
+    0,0,
+    width,height
+  );
+
+
+  /* STARS */
+
+  for(const star of stars){
+
+    star.y +=
+      star.speed * dt;
+
+    if(star.y > 1){
+
+      star.y = 0;
+      star.x = Math.random();
+
+    }
+
+    const x =
+      star.x * width;
+
+    const y =
+      star.y * height * .75;
+
+    ctx.globalAlpha =
+      star.alpha *
+      (
+        .7 +
+        Math.sin(
+          t*2+
+          star.x*10
+        )*.3
+      );
+
+    ctx.fillStyle =
+      "#eaffff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      x,
+      y,
+      star.size,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
 
   }
 
-  if(s.x>1.05)
-   s.x=-.05;
+  ctx.globalAlpha=1;
 
-  const px=s.x*W;
-  const py=s.y*H;
 
-  const length=
-   s.tail*
-   s.speed;
+  /* PURPLE PLANET */
 
-  const gradient=
-   ctx.createLinearGradient(
-    px,
-    py-length,
-    px,
-    py
-   );
+  ctx.save();
 
-  gradient.addColorStop(
-   0,
-   "rgba(180,230,255,0)"
-  );
+  ctx.shadowBlur=30;
+  ctx.shadowColor="#714cff";
 
-  gradient.addColorStop(
-   .65,
-   `rgba(120,210,255,${s.a*.25})`
-  );
-
-  gradient.addColorStop(
-   1,
-   `rgba(255,255,255,${s.a})`
-  );
-
-  ctx.strokeStyle=gradient;
-
-  ctx.lineWidth=
-   Math.max(.5,s.s*.7);
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-   px,
-   py-length
-  );
-
-  ctx.lineTo(
-   px,
-   py
-  );
-
-  ctx.stroke();
-
-  const pulse=
-   .7+
-   Math.sin(
-    time*4+s.phase
-   )*.3;
-
-  ctx.globalAlpha=
-   s.a*pulse;
-
-  ctx.fillStyle="#e9fbff";
+  ctx.fillStyle="#3826a5";
 
   ctx.beginPath();
 
   ctx.arc(
-   px,
-   py,
-   s.s,
-   0,
-   Math.PI*2
+    width*.14,
+    height*.27,
+    height*.16,
+    0,
+    Math.PI*2
   );
 
   ctx.fill();
 
- }
-
- ctx.globalAlpha=1;
+  ctx.restore();
 
 
- /* DISTANT STARS */
+  /* RED PLANET */
 
- for(let i=0;i<18;i++){
+  ctx.save();
 
-  const x=
-   (i*173.7)%W;
+  ctx.shadowBlur=20;
+  ctx.shadowColor="#ff5038";
 
-  const y=
-   (
-    i*97.3+
-    time*8*(i%3+1)
-   )%(H*.68);
+  ctx.fillStyle="#ff704b";
 
-  const pulse=
-   .5+
-   Math.sin(time*2+i)*.3;
+  ctx.beginPath();
 
-  ctx.globalAlpha=pulse;
-
-  ctx.fillStyle="#fff";
-
-  ctx.fillRect(
-   x,y,1.5,1.5
+  ctx.arc(
+    width*.72,
+    height*.58,
+    height*.10,
+    0,
+    Math.PI*2
   );
 
- }
+  ctx.fill();
 
- ctx.globalAlpha=1;
-
-
- /* PLANETS */
-
- ctx.save();
-
- ctx.shadowBlur=30;
- ctx.shadowColor="#714cff";
- ctx.fillStyle="#3526a5";
-
- ctx.beginPath();
-
- ctx.arc(
-  W*.16,
-  H*.28,
-  H*.18,
-  0,
-  Math.PI*2
- );
-
- ctx.fill();
-
- ctx.restore();
+  ctx.restore();
 
 
- ctx.save();
+  /* WATER */
 
- ctx.shadowBlur=20;
- ctx.shadowColor="#ff5038";
- ctx.fillStyle="#ff704b";
+  ctx.fillStyle =
+    "#082e52";
 
- ctx.beginPath();
-
- ctx.arc(
-  W*.58,
-  H*.63,
-  H*.12,
-  0,
-  Math.PI*2
- );
-
- ctx.fill();
-
- ctx.restore();
+  ctx.fillRect(
+    0,
+    height*.72,
+    width,
+    height*.28
+  );
 
 
- /* DISTANT LAND */
+  for(
+    let i=0;
+    i<25;
+    i++
+  ){
 
- ctx.fillStyle="#111b50";
+    const y =
+      height*.74+
+      i*8;
 
- ctx.beginPath();
+    const x =
+      (
+        i*97+
+        t*25
+      )%width;
 
- ctx.moveTo(
-  0,H*.72
- );
+    ctx.globalAlpha=.22;
 
- for(
-  let x=0;
-  x<=W;
-  x+=70
- ){
+    ctx.fillStyle =
+      i%2
+      ? "#1f75a0"
+      : "#32d7d4";
+
+    ctx.fillRect(
+      x,
+      y,
+      40+(i%4)*10,
+      2
+    );
+
+  }
+
+  ctx.globalAlpha=1;
+
+}
+
+
+/* =====================================================
+   DUCK
+===================================================== */
+
+function createDuck(){
+
+  const s =
+    settings[difficulty];
+
+  const fromLeft =
+    Math.random() < .5;
+
+  const size =
+    25+
+    Math.random()*13;
+
+  const direction =
+    fromLeft ? 1 : -1;
+
+  const speed =
+    s.speed *
+    (
+      0.8+
+      Math.random()*.5
+    ) *
+    (
+      1+
+      gameTime/45*.3
+    );
+
+  return {
+
+    x:
+      fromLeft
+      ? -60
+      : width+60,
+
+    y:
+      height*.20+
+      Math.random()*
+      height*.38,
+
+    vx:
+      direction*speed,
+
+    vy:
+      (
+        Math.random()-.5
+      )*35,
+
+    size:size,
+
+    flap:
+      Math.random()*10
+
+  };
+
+}
+
+
+/* =====================================================
+   DRAW DUCK
+===================================================== */
+
+function drawDuck(duck){
+
+  const s =
+    duck.size;
+
+  ctx.save();
+
+  ctx.translate(
+    duck.x,
+    duck.y
+  );
+
+  if(duck.vx<0){
+
+    ctx.scale(
+      -1,
+      1
+    );
+
+  }
+
+
+  duck.flap +=
+    .15;
+
+
+  const wing =
+    Math.sin(
+      duck.flap
+    ) * s*.13;
+
+
+  /* BODY */
+
+  ctx.fillStyle =
+    "#f0f0e5";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    0,
+    0,
+    s*.70,
+    s*.34,
+    0,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* WING */
+
+  ctx.fillStyle =
+    "#2467bd";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    -s*.18,
+    wing*.2,
+    s*.45,
+    s*.18,
+    -.25,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* HEAD */
+
+  ctx.fillStyle =
+    "#20b85c";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    s*.43,
+    -s*.22,
+    s*.28,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* BEAK */
+
+  ctx.fillStyle =
+    "#ffb126";
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    s*.62,
+    -s*.22
+  );
 
   ctx.lineTo(
-   x,
-   H*.72-
-   Math.random()*60
+    s*.93,
+    -s*.12
   );
 
- }
-
- ctx.lineTo(W,H);
- ctx.lineTo(0,H);
-
- ctx.fill();
-
-
- /* WATER */
-
- ctx.fillStyle="#082e52";
-
- ctx.fillRect(
-  0,
-  H*.72,
-  W,
-  H*.28
- );
-
-
- /* REFLECTION */
-
- for(
-  let i=0;
-  i<32;
-  i++
- ){
-
-  const y=
-   H*.74+i*7;
-
-  const wave=
-   Math.sin(
-    time*2+i*.8
-   )*20;
-
-  const x=
-   (
-    i*83+
-    time*25*(i%3+1)
-   )%W;
-
-  ctx.globalAlpha=
-   .22+
-   Math.sin(
-    time*3+i
-   )*.08;
-
-  ctx.fillStyle=
-   i%2
-   ? "#1f75a0"
-   : "#32d7d4";
-
-  ctx.fillRect(
-   x+wave,
-   y,
-   30+(i%4)*12,
-   2
+  ctx.lineTo(
+    s*.62,
+    -s*.03
   );
 
- }
+  ctx.closePath();
 
- ctx.globalAlpha=1;
-
-}
+  ctx.fill();
 
 
-/* =========================================
-   SPEED
-========================================= */
+  /* EYE */
 
-function currentSpeedMultiplier(){
+  ctx.fillStyle =
+    "#111";
 
- return Math.min(
-  3.2,
-  1+
-  elapsedGameTime/35*.38
- );
+  ctx.beginPath();
 
-}
+  ctx.arc(
+    s*.50,
+    -s*.29,
+    s*.045,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
 
 
-/* =========================================
-   DUCK SPAWN
-========================================= */
-
-function spawnDuck(){
-
- const c=levels[level];
-
- const fromLeft=
-  Math.random()<.5;
-
- const size=
-  25+
-  Math.random()*13;
-
- const ramp=
-  currentSpeedMultiplier();
-
- ducks.push({
-
-  x:
-   fromLeft
-   ? -70
-   : W+70,
-
-  y:
-   H*(
-    .23+
-    Math.random()*.38
-   ),
-
-  vx:
-   (
-    fromLeft
-    ? 1
-    : -1
-   )*
-   c.speed*
-   (
-    1.1+
-    Math.random()*.7
-   )*
-   ramp,
-
-  vy:
-   (
-    Math.random()-.5
-   )*
-   .8*
-   ramp,
-
-  size,
-
-  phase:
-   Math.random()*10
-
- });
+  ctx.restore();
 
 }
 
 
-/* =========================================
-   DRAW DUCK
-========================================= */
+/* =====================================================
+   SPAWN
+===================================================== */
 
-function drawDuck(d){
+function spawn(){
 
- ctx.save();
-
- ctx.translate(
-  d.x,
-  d.y
- );
-
- if(d.vx<0)
-  ctx.scale(-1,1);
-
- const s=d.size;
-
- const flap=
-  Math.sin(d.phase)*
-  s*.16;
-
- ctx.fillStyle="#20b85c";
-
- ctx.beginPath();
-
- ctx.arc(
-  s*.28,
-  -s*.18,
-  s*.28,
-  0,
-  Math.PI*2
- );
-
- ctx.fill();
-
- ctx.fillStyle="#f0f0e5";
-
- ctx.beginPath();
-
- ctx.ellipse(
-  -s*.05,
-  0,
-  s*.7,
-  s*.32+flap,
-  0,
-  0,
-  Math.PI*2
- );
-
- ctx.fill();
-
- ctx.fillStyle="#2467bd";
-
- ctx.beginPath();
-
- ctx.ellipse(
-  -s*.25,
-  s*.03,
-  s*.48,
-  s*.18-flap*.3,
-  -.3,
-  0,
-  Math.PI*2
- );
-
- ctx.fill();
-
- ctx.fillStyle="#ffb126";
-
- ctx.beginPath();
-
- ctx.moveTo(
-  s*.48,
-  -s*.17
- );
-
- ctx.lineTo(
-  s*.82,
-  -s*.08
- );
-
- ctx.lineTo(
-  s*.48,
-  s*.01
- );
-
- ctx.fill();
-
- ctx.fillStyle="#111";
-
- ctx.beginPath();
-
- ctx.arc(
-  s*.37,
-  -s*.28,
-  s*.045,
-  0,
-  Math.PI*2
- );
-
- ctx.fill();
-
- ctx.restore();
+  ducks.push(
+    createDuck()
+  );
 
 }
 
 
-/* ===============
+/* =====================================================
+   START
+===================================================== */
+
+function startGame(){
+
+  score=0;
+  round=1;
+
+  timeLeft =
+    settings[difficulty].time;
+
+  combo=0;
+  comboTime=0;
+
+  gameTime=0;
+
+  ducks=[];
+  particles=[];
+
+  running=true;
+  paused=false;
+
+  overlay.classList.add(
+    "hidden"
+  );
+
+
+  const count =
+    difficulty==="expert"
+    ? 4
+    : settings[difficulty].count;
+
+
+  for(
+    let i=0;
+    i<count;
+    i++
+  ){
+
+    spawn();
+
+  }
+
+
+  updateHUD();
+
+}
+
+
+/* =====================================================
+   HUD
+===================================================== */
+
+function updateHUD(){
+
+  scoreEl.textContent =
+    String(score)
+    .padStart(6,"0");
+
+  timeEl.textContent =
+    difficulty==="expert"
+    ? "∞"
+    :
+    String(
+      Math.max(
+        0,
+        Math.ceil(timeLeft)
+      )
+    ).padStart(
+      2,
+      "0"
+    );
+
+  roundEl.textContent =
+    difficulty==="expert"
+    ? "∞"
+    :
+    String(round)
+    +"/03";
+
+  ducksEl.textContent =
+    difficulty==="expert"
+    ? "∞"
+    :
+    String(
+      ducks.length
+    ).padStart(
+      2,
+      "0"
+    );
+
+}
+
+
+/* =====================================================
+   SCANNER
+===================================================== */
+
+function aimScanner(x,y){
+
+  const dx =
+    x -
+    width/2;
+
+  const dy =
+    y -
+    height;
+
+  const angle =
+    Math.atan2(
+      dx,
+      -dy
+    ) *
